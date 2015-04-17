@@ -1,7 +1,7 @@
 Code Dojo, April 2015: battleships
 ----
 
-These are file for the 'battleship' code. See the forked battleship project in my repository
+These are the files for the 'battleship' code. (See the forked battleship project in my repository)
 
 game.py: the game implementation with a bug corrected
 
