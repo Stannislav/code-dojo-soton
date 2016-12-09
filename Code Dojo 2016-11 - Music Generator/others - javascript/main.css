@@ -1,0 +1,43 @@
+body {
+	overflow: hidden;
+}
+
+.button_row {
+	overflow: auto;
+	margin: auto;
+	width: 100vh;
+	height: 25vh;
+	background-color: #404040;
+}
+
+.button-container {
+	float: left;
+	height: 100%;
+	width: 25%;
+}
+
+.button {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	margin: auto;
+	height: 80%;
+    width: 80%;
+	background-color: #606060;
+}
+
+.tools-left {
+	margin: 0;
+	float: left;
+	width: 10%;
+	height: 100vh;
+	background-color: #606060;
+}
+
+.tools-right {
+	margin: 0;
+	float: right;
+	width: 10%;
+	height: 100vh;
+	background-color: #606060;
+}
