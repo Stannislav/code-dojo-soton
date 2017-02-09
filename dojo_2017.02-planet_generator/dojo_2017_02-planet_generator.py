@@ -1,30 +1,53 @@
 #!/usr/bin/env python3
 
 import pygame
+import random
 
 
 background_colour = (0, 0, 0)
+particle_color = (255, 255, 255)
+sun_color = (255, 0, 0)
 (width, height) = (600, 400)
 
 
-class Particle():
-    def __init__(self, x, y):
+class Sun():
+    def __init__(self, x, y, G):
         self.x = x
         self.y = y
-        self.color = (255, 255, 255)
+        self.G = G
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (self.x, self.y), 5, 0)
+        pygame.draw.circle(screen, sun_color,
+                           (int(self.x), int(self.y)), 15 * self.G, 0)
+
+
+class Particle():
+    def __init__(self, x, y, sun):
+        self.x = x
+        self.y = y
+        self.vx = random.random() * 4 - 2
+        self.vy = random.random() * 4 - 2
+        self.ax = 0
+        self.ay = 0.2
+        self.sun = sun
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, particle_color,
+                           (int(self.x), int(self.y)), 5, 0)
 
     def update(self):
-        self.x += 1
+        self.x += self.vx
+        self.y += self.vy
+        self.vx += self.ax
+        self.vy += self.ay
 
 
-particles = [Particle(100, 100), Particle(300, 50)]
+sun = Sun(width / 2, height / 2, 1)
+particles = [Particle(100, 100, sun), Particle(300, 50, sun)]
 
 
 def draw_main(screen):
-    pygame.draw.circle(screen, (255, 0, 0), (width / 2, height / 2), 40, 0)
+    sun.draw(screen)
     for p in particles:
         p.draw(screen)
         p.update()
