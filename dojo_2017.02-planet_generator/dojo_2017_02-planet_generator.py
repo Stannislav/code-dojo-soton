@@ -2,6 +2,7 @@
 
 import pygame
 import random
+import math
 
 
 background_colour = (0, 0, 0)
@@ -18,7 +19,7 @@ class Sun():
 
     def draw(self, screen):
         pygame.draw.circle(screen, sun_color,
-                           (int(self.x), int(self.y)), 15 * self.G, 0)
+                           (int(self.x), int(self.y)), self.G, 0)
 
 
 class Particle():
@@ -33,17 +34,27 @@ class Particle():
 
     def draw(self, screen):
         pygame.draw.circle(screen, particle_color,
-                           (int(self.x), int(self.y)), 5, 0)
+                           (int(self.x), int(self.y)), 2, 0)
 
     def update(self):
         self.x += self.vx
         self.y += self.vy
         self.vx += self.ax
         self.vy += self.ay
+        dx = self.x - sun.x
+        dy = self.y - sun.y
+        d = math.sqrt(dx * dx + dy * dy)
+        alpha = math.atan2(dy, dx)
+        self.ax = -sun.G * math.cos(alpha) / d
+        self.ay = -sun.G * math.sin(alpha) / d
 
 
-sun = Sun(width / 2, height / 2, 1)
-particles = [Particle(100, 100, sun), Particle(300, 50, sun)]
+sun = Sun(width / 2, height / 2, 5)
+particles = []
+for i in range(150):
+    x = random.random() * width
+    y = random.random() * height
+    particles.append(Particle(x, y, sun))
 
 
 def draw_main(screen):
