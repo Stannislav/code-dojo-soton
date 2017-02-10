@@ -10,7 +10,6 @@ n_particles = 100
 n_suns = 3
 p_new = None
 c_down = None
-m_new = None
 (width, height) = (800, 600)
 
 
@@ -38,11 +37,18 @@ class Particle():
         self.m = m
         self.suns = suns
         self.dead = False
-        self.color = (255, 255, 255)
+        self.color = pygame.Color(255, 255, 255)
+        self.prev_pos = []
+        self.trail = 5
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color,
                            (int(self.x), int(self.y)), self.r, 0)
+
+        for i, p in enumerate(self.prev_pos):
+            c = self.color - pygame.Color(*[255-255/self.trail*i]*3)
+            pygame.draw.circle(screen, c,
+                               (int(p[0]), int(p[1])), self.r, 0)
 
     def update(self):
         if self.dead:
@@ -63,8 +69,15 @@ class Particle():
 
         self.vx += ax
         self.vy += ay
+        self.prev_pos.append((self.x, self.y))
+        if len(self.prev_pos) > self.trail:
+            self.prev_pos = self.prev_pos[-self.trail:]
         self.x += self.vx
         self.y += self.vy
+
+        # die if too far away
+        if abs(self.x - width/2) > 1000 or abs(self.y - height/2) > 1000:
+            self.dead = True
 
 
 suns = []
