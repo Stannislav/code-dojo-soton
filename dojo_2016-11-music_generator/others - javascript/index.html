@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Launchpad</title>
+		<script src="keithwhor-audiosynth/audiosynth.js" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="main.css">
+	</head>
+	<body class="text-center">
+        <div class="tools-left">
+            <select class="" name="" onchange="setInstrument(this)">
+				<option value="edm">edm</option>
+				<option value="organ">organ</option>
+				<option value="accoustic">accoustic</option>
+				<option value="piano">piano</option>
+
+            </select>
+        </div>
+
+        <div class="tools-right">
+            <button type="button">Set sound</button>
+        </div>
+
+        <div class="button_row">
+            <div class="button-container">
+                <div id="00" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="10" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="20" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="30" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+        </div>
+        <div class="button_row">
+            <div class="button-container">
+                <div id="01" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="11" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="21" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="31" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+        </div>
+        <div class="button_row">
+            <div class="button-container">
+                <div id="02" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="12" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="22" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="32" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+        </div>
+        <div class="button_row">
+            <div class="button-container">
+                <div id="03" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="13" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="23" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+            <div class="button-container">
+                <div id="33" class="button" onclick="keypress(this)">
+                </div>
+            </div>
+        </div>
+		<script src="main.js"></script>
+	</body>
+</html>
