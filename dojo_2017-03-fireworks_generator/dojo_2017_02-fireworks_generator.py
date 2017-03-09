@@ -46,7 +46,7 @@ class Bullet(Particle):
     def __init__(self, x, y, angle):
         super(Bullet, self).__init__(
             x, y, -8, angle + random.random() * 0.3 - 0.15)
-        self.lifetime = 90 - random.randint(0, 20)
+        self.lifetime = 70 - random.randint(0, 40)
         self.exploded = False
         self.dead = False
 
