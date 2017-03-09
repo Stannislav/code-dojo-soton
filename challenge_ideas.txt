@@ -1,0 +1,16 @@
+Challenge Ideas:
+
+1/ Games:
+ - Minesweeper
+ - Snake
+ - Tetris
+ - Space Invaders
+ - Pacman
+ - Flappy Bird
+
+2/ Generate Fireworks
+3/ Random Walker
+4/ Sudoku Solver
+5/ Connect Four
+6/ Sokoban
+7/ Connect Four AI
