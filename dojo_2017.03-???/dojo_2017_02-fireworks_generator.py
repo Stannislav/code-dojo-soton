@@ -9,40 +9,67 @@ background_colour = (0, 0, 0)
 (width, height) = (800, 600)
 clock = None
 fps = 60
+G = 0.06
 
 # n_planets = 100
 # n_stars = 1
 # p_new = None
 # c_down = None
 
-# G = 0.5
-
 
 class Particle(object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, v, angle):
         self.x = x
         self.y = y
+        self.vx = v * math.sin(angle)
+        self.vy = v * math.cos(angle)
+        self.ax = 0
+        self.ay = 0
         self.r = 1
+        self.dead = False
+        self.lifetime = -1
         self.color = pygame.Color(255, 255, 255)
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color,
                            (int(self.x), int(self.y)), self.r, 0)
 
+    def update(self):
+        if not self.dead:
+            self.x = self.x + self.vx
+            self.y = self.y + self.vy
+
+            self.vx = self.vx + self.ax
+            self.vy = self.vy + self.ay + G
+
+            self.lifetime = self.lifetime - 1
+            if self.lifetime < 0:
+                self.dead = True
+
 
 class Bullet(Particle):
-    def __init__(self, x, y):
-        super(Bullet, self).__init__(x, y)
-        self.v = -5
+    def __init__(self, x, y, angle):
+        super(Bullet, self).__init__(
+            x, y, -8, angle + random.random() * 0.3 - 0.15)
         self.lifetime = 90 - random.randint(0, 20)
+        self.exploded = False
         self.dead = False
 
-    def update(self):
-        self.y = self.y + self.v
-        self.lifetime = self.lifetime - 1
+    # def update(self):
+    #     self.y = self.y + self.v
+    #     self.lifetime = self.lifetime - 1
 
     def explode(self):
-        self.dead = True
+        self.exploded = True
+
+
+class Spark(Particle):
+    """ Fireworks sparks """
+    def __init__(self, x, y, v, angle, hue):
+        super(Spark, self).__init__(x, y, v, angle)
+        self.lifetime = 60
+        self.color = pygame.Color(0, 0, 0)
+        self.color.hsva = (hue, 100, 100, 100)
 
 # class Star(Particle):
 #     def __init__(self, x, y, M):
@@ -127,7 +154,8 @@ class Bullet(Particle):
 
 
 # x = 50
-bullets = [Bullet(random.randint(0, width), height)]
+bullets = [Bullet(random.randint(0, width), height, 0)]
+sparks = []
 
 
 def draw_main(screen):
@@ -137,7 +165,7 @@ def draw_main(screen):
     # pygame.draw.circle(screen, (255, 255, 255), (300, 300), 4, 0)
 
     if random.random() < 0.1:
-        bullets.append(Bullet(random.randint(0, width), height))
+        bullets.append(Bullet(random.randint(0, width), height, 0))
 
     for b in bullets:
         if not b.dead:
@@ -145,6 +173,20 @@ def draw_main(screen):
             b.draw(screen)
             if b.lifetime == 0:
                 b.explode()
+                hue = random.random() * 360
+                n = 20
+                for i in range(n):
+                    sparks.append(
+                        Spark(b.x, b.y, 2, 2.0 * math.pi * i / n, hue))
+        else:
+            bullets.remove(b)
+
+    for s in sparks:
+        if not s.dead:
+            s.update()
+            s.draw(screen)
+        else:
+            sparks.remove(s)
 
     # pygame.draw.line(screen, (0, 255, 255), c_down, pygame.mouse.get_pos())
 
