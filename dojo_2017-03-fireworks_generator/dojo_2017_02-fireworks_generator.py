@@ -9,8 +9,13 @@ background_colour = (0, 0, 0)
 (width, height) = (800, 600)
 clock = None
 fps = 60
-G = 0.1
+
+grav = 0.1
 airfric = 0.95
+nsparks = 40
+
+bullets = []
+sparks = []
 
 
 class Particle(object):
@@ -23,12 +28,12 @@ class Particle(object):
         self.ay = 0
         self.r = 1
         self.dead = False
-        self.lifetime = -1
+        self.lifetime = fps  # = 1 second
         self.color = [255, 255, 255]
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color,
-                           (int(self.x), int(self.y)), self.r, 0)
+        pygame.draw.circle(
+            screen, self.color, (int(self.x), int(self.y)), self.r, 0)
 
     def update(self):
         if not self.dead:
@@ -36,7 +41,7 @@ class Particle(object):
             self.y = self.y + self.vy
 
             self.vx = self.vx + self.ax
-            self.vy = self.vy + self.ay + G
+            self.vy = self.vy + self.ay + grav
 
             self.vx = self.vx * airfric
             self.vy = self.vy * airfric
@@ -50,25 +55,18 @@ class Bullet(Particle):
     def __init__(self, x, y, angle):
         super(Bullet, self).__init__(
             x, y, -25, angle + random.random() * 0.3 - 0.15)
+
         self.lifetime = 70 - random.randint(0, 60)
-        self.exploded = False
         self.dead = False
         self.color = [0x88] * 3
 
-    # def update(self):
-    #     self.y = self.y + self.v
-    #     self.lifetime = self.lifetime - 1
-
-    def explode(self):
-        self.exploded = True
-
 
 class Spark(Particle):
-    """ Fireworks sparks """
     def __init__(self, x, y, v, angle, hue):
         super(Spark, self).__init__(x, y, v, angle)
+
         self.lifetime = 120
-        c = pygame.Color(0, 0, 0)
+        c = pygame.Color(0)
         c.hsva = (hue, 100, 100, 100)
         self.color = [c.r, c.g, c.b]
         self.fade = 3
@@ -78,6 +76,8 @@ class Spark(Particle):
 
     def update(self):
         super(Spark, self).update()
+
+        # fade the color at each update
         self.color = [v - self.fade for v in self.color]
         self.color = [v if v > 0 else 0 for v in self.color]
 
@@ -95,44 +95,40 @@ class Spark(Particle):
                                (int(p[0]), int(p[1])), int(self.r * 0.75), 0)
 
 
-bullets = [Bullet(random.randint(0, width), height, 0)]
-sparks = []
-
-
 def draw_main(screen):
     clock.tick(fps)
 
-    # pygame.draw.line(screen, (0, 255, 255), (100, 100), (400, 400))
-    # pygame.draw.circle(screen, (255, 255, 255), (300, 300), 4, 0)
-
+    # randomly generate new fireworks
     if random.random() < 0.05:
         bullets.append(Bullet(random.randint(0, width), height, 0))
 
+    # iterate through bullets
     for b in bullets:
-        if not b.dead:
+        if b.dead:
+            bullets.remove(b)
+        else:
             b.update()
             b.draw(screen)
-            if b.lifetime == 0:
-                b.explode()
+            # bullet about to die - explode!
+            if b.lifetime == 1:
                 hue = random.random() * 360
-                n = 40
-                for i in range(n):
+                for i in range(nsparks):
                     sparks.append(Spark(
                         b.x, b.y, 5 + random.random(),
-                        2.0 * math.pi * i / n, hue))
-        else:
-            bullets.remove(b)
+                        2.0 * math.pi * i / nsparks, hue))
 
+    # iterate through sparks
     for s in sparks:
-        if not s.dead:
+        if s.dead:
+            sparks.remove(s)
+        else:
             s.update()
             s.draw(screen)
-        else:
-            sparks.remove(s)
 
 
 def main():
     global clock
+
     # initialize pygame
     pygame.init()
     screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
