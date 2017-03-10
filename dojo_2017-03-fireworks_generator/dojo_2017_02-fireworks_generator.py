@@ -9,7 +9,8 @@ background_colour = (0, 0, 0)
 (width, height) = (800, 600)
 clock = None
 fps = 60
-G = 0.06
+G = 0.1
+airfric = 0.95
 
 
 class Particle(object):
@@ -23,7 +24,7 @@ class Particle(object):
         self.r = 1
         self.dead = False
         self.lifetime = -1
-        self.color = pygame.Color(255, 255, 255)
+        self.color = [255, 255, 255]
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color,
@@ -37,6 +38,9 @@ class Particle(object):
             self.vx = self.vx + self.ax
             self.vy = self.vy + self.ay + G
 
+            self.vx = self.vx * airfric
+            self.vy = self.vy * airfric
+
             self.lifetime = self.lifetime - 1
             if self.lifetime < 0:
                 self.dead = True
@@ -45,10 +49,11 @@ class Particle(object):
 class Bullet(Particle):
     def __init__(self, x, y, angle):
         super(Bullet, self).__init__(
-            x, y, -8, angle + random.random() * 0.3 - 0.15)
-        self.lifetime = 70 - random.randint(0, 40)
+            x, y, -25, angle + random.random() * 0.3 - 0.15)
+        self.lifetime = 70 - random.randint(0, 60)
         self.exploded = False
         self.dead = False
+        self.color = [0x88] * 3
 
     # def update(self):
     #     self.y = self.y + self.v
@@ -62,20 +67,19 @@ class Spark(Particle):
     """ Fireworks sparks """
     def __init__(self, x, y, v, angle, hue):
         super(Spark, self).__init__(x, y, v, angle)
-        self.lifetime = 60
-        self.color = pygame.Color(0, 0, 0)
-        self.color.hsva = (hue, 100, 100, 100)
+        self.lifetime = 120
+        c = pygame.Color(0, 0, 0)
+        c.hsva = (hue, 100, 100, 100)
+        self.color = [c.r, c.g, c.b]
+        self.fade = 3
 
         self.prev_pos = []
         self.trail = 20
 
     def update(self):
         super(Spark, self).update()
-        hsva = list(self.color.hsva)
-        hsva[2] = hsva[2] - 1
-        if hsva[2] < 0:
-            hsva[2] = 0
-        self.color.hsva = tuple(map(int, hsva))
+        self.color = [v - self.fade for v in self.color]
+        self.color = [v if v > 0 else 0 for v in self.color]
 
         # store position history for trail
         self.prev_pos.append((self.x, self.y))
@@ -85,9 +89,10 @@ class Spark(Particle):
     def draw(self, screen):
         super(Spark, self).draw(screen)
         # draw the trail
+        c = list(self.color)
         for i, p in enumerate(self.prev_pos):
-            pygame.draw.circle(screen, self.color,
-                               (int(p[0]), int(p[1])), self.r, 0)
+            pygame.draw.circle(screen, [v * i / self.trail for v in c],
+                               (int(p[0]), int(p[1])), int(self.r * 0.75), 0)
 
 
 bullets = [Bullet(random.randint(0, width), height, 0)]
@@ -100,7 +105,7 @@ def draw_main(screen):
     # pygame.draw.line(screen, (0, 255, 255), (100, 100), (400, 400))
     # pygame.draw.circle(screen, (255, 255, 255), (300, 300), 4, 0)
 
-    if random.random() < 0.1:
+    if random.random() < 0.05:
         bullets.append(Bullet(random.randint(0, width), height, 0))
 
     for b in bullets:
@@ -110,10 +115,11 @@ def draw_main(screen):
             if b.lifetime == 0:
                 b.explode()
                 hue = random.random() * 360
-                n = 20
+                n = 40
                 for i in range(n):
-                    sparks.append(
-                        Spark(b.x, b.y, 2, 2.0 * math.pi * i / n, hue))
+                    sparks.append(Spark(
+                        b.x, b.y, 5 + random.random(),
+                        2.0 * math.pi * i / n, hue))
         else:
             bullets.remove(b)
 
