@@ -52,9 +52,9 @@ class Particle(object):
 
 
 class Bullet(Particle):
-    def __init__(self, x, y, angle):
+    def __init__(self, x, y):
         super(Bullet, self).__init__(
-            x, y, -25, angle + random.random() * 0.3 - 0.15)
+            x, y, -25, random.random() * 0.3 - 0.15)
 
         self.lifetime = 70 - random.randint(0, 60)
         self.dead = False
@@ -100,7 +100,7 @@ def draw_main(screen):
 
     # randomly generate new fireworks
     if random.random() < 0.05:
-        bullets.append(Bullet(random.randint(0, width), height, 0))
+        bullets.append(Bullet(random.randint(0, width), height))
 
     # iterate through bullets
     for b in bullets:
